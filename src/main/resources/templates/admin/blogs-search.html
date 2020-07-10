@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/_fragment :: head(~{::title})">
+    <title>管理博客</title>
+</head>
+<body>
+    <!--导航-->
+    <nav th:replace="admin/_fragment :: menu(1)">
+    </nav>
+    <div class="ui attached pointing menu">
+        <div class="ui container">
+            <div class="ui right menu">
+                <a th:href="@{/admin/blogs/add}" class="item">发布</a>
+                <a th:href="@{/admin/blogs}" class="active teal item">列表</a>
+            </div>
+
+        </div>
+
+    </div>
+    <!--中间内容-->
+    <div class="m-container-small m-padded-tb-big">
+        <div class="ui container">
+          <form th:action="@{/admin/blogs/search}" th:method="post" class="ui segment form" >
+            <div class="inline fields">
+                <div class="field">
+                    <input type="text" name="title" placeholder="标题">
+                </div>
+                <div class="field">
+                    <div class="ui selection dropdown">
+                        <input type="hidden" name="typeId">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">分类</div>
+                        <div class="menu">
+                            <div th:each="type:${types}" class="item" th:data-value="${type.id}" th:text="${type.name}">错误日志</div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" id="recommend" name="recommend">
+                        <label for="recommend" class="m-text-thin">推荐</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <button class="ui mini teal basic button"><i class="search icon"></i>搜索</button>
+                </div>
+                <div class="field">
+                    <a th:href="@{/admin/blogs/add}" class="ui mini orange basic button"><i class="add icon"></i>新增</a>
+                </div>
+            </div>
+          </form>
+
+            <div id="table-container">
+                <table class="ui table" >
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>标题</th>
+                        <th>类型</th>
+                        <th>推荐</th>
+                        <th>更新时间</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="blog,sa:${pageInfo.list}">
+                        <td th:text="${sa.count}+(${pageInfo.pageNum}-1)*${pageInfo.pageSize}"></td>
+                        <td th:text="${blog.title}">运动美好生活</td>
+                        <td th:text="${blog.type.name}">认知升级</td>
+                        <td th:text="${blog.recommend==1?'是':'否'}">否</td>
+                        <td th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd')}">2020-03-11 10:11:35</td>
+                        <td th:text="${blog.published==1?'发布':'草稿'}">发布</td>
+                        <td>
+                            <a th:href="@{/admin/blogs/{id}/upd(id=${blog.id})}" class="ui mini teal button">编辑</a>
+                            <a th:href="@{/admin/blogs/{id}/del(id=${blog.id})}" class="ui mini red button">删除</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="6">
+                            <div class="ui mini pagination menu">
+                                <a class="item" th:href="@{/admin/blogs/page}">首页</a>
+                                <a class="item"  th:href="@{/admin/blogs/page(pageNum=${pageInfo.hasPreviousPage}?${pageInfo.prePage}:1)}">上一页</a>
+                                <a class="item" th:href="@{/admin/blogs/page(pageNum=${pageInfo.hasNextPage}?${pageInfo.nextPage}:${pageInfo.pages})}">下一页</a>
+                                <a class="item" th:href="@{/admin/blogs/page(pageNum=${pageInfo.pages})}">尾页</a>
+                            </div>
+                        </th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <!--底部-->
+    <footer th:replace="admin/_fragment :: footer">
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+<script>
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+    $('.ui.dropdown').dropdown({
+        on : 'hover'
+    });
+
+</script>
+</body>
+</html>

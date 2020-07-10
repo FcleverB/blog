@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/_fragment :: head(~{::title})">
+    <title>管理博客</title>
+</head>
+<body>
+<!--导航-->
+<nav th:replace="admin/_fragment :: menu(0)"></nav>
+<!--中间内容-->
+<div class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+        <div class="ui success large  message">
+            <h3>Hi,</h3>
+            <p th:text="${session.user.nickname}+'欢迎登录！'">NickMing，欢迎登录！</p>
+        </div>
+    </div>
+</div>
+<!--底部-->
+<footer th:replace="admin/_fragment :: footer">
+</footer>
+
+</body>
+</html>

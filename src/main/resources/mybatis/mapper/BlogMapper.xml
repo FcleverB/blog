@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nick.mapper.BlogMapper">
+
+    <resultMap id="detail" type="Blog">
+        <id property="id" column="bid"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="firstPhoto" column="first_photo"/>
+        <result property="flag" column="flag"/>
+        <result property="views" column="views"/>
+        <result property="shareStatement" column="share_statement"/>
+        <result property="commentabled" column="commentabled"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+        <association property="user" javaType="User">
+            <result property="nickname" column="nickname"/>
+            <result property="avatar" column="avatar"/>
+        </association>
+        <association property="tags" javaType="Tag">
+            <id property="id" column="tid"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="indexBlog" type="cn.nick.dto.IndexBlog">
+        <id property="id" column="bid"/>
+        <result property="title" column="title"/>
+        <result property="firstPhoto" column="first_photo"/>
+        <result property="views" column="views"/>
+        <result property="createTime" column="create_time"/>
+        <result property="description" column="description"/>
+        <result property="typeName" column="name"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+        <result property="typeId" column="tid"/>
+    </resultMap>
+
+    <resultMap id="blogList" type="cn.nick.dto.BlogQuery">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="recommend" column="recommend"/>
+        <result property="typeId" column="type_id"/>
+        <result property="published" column="published"/>
+        <association property="type" javaType="Type">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+
+    <select id="queryBlogByTypeOrTagOrRecommend" resultMap="blogList" >
+        select b.id,b.title,b.recommend,b.type_id,b.published,b.create_time,b.update_time,t.id,t.name
+        from t_blog b,t_type t
+        <where>
+        <if test="1 == 1">
+            b.type_id = t.id
+        </if>
+        <if test="typeId != null">
+        and b.type_id = #{typeId}
+        </if>
+        <if test="recommend != null">
+        and b.recommend = #{recommend2}
+        </if>
+        <if test="title != null">
+          and b.title like concat('%',#{title},'%')
+        </if>
+        </where>
+        order by b.create_time desc
+    </select>
+
+    <select id="queryBlogById" resultType="Blog">
+        select * from t_blog where id = #{id}
+    </select>
+
+    <select id="listBlog" resultType="Blog">
+        select * from t_blog
+    </select>
+    <select id="queryIndexBlog" resultMap="indexBlog">
+        select b.id bid,b.title,b.first_photo,b.views,b.create_time,b.description,
+        t.name ,u.nickname,u.avatar,t.id tid
+        from t_blog b,t_type t,t_user u
+        where b.type_id = t.id and  u.id = b.user_id and b.published = 1
+        order by b.create_time desc
+    </select>
+    <select id="queryIndexBlogByTypeOrTag" resultMap="indexBlog">
+         select b.id bid,b.title,b.first_photo,b.views,b.create_time,b.description,
+        t.name ,u.nickname,u.avatar,t.id tid
+        from t_blog b,t_type t,t_user u
+        <if test="tagId != null">
+        ,t_blog_tags tb
+        </if>
+        <where>
+            <if test="1 == 1">
+            b.type_id = t.id and  u.id = b.user_id
+            </if>
+            <if test="typeId != null">
+                and b.type_id = #{typeId}
+            </if>
+            <if test="tagId != null">
+                and tb.tag_id = #{tagId} and tb.blog_id = b.id
+            </if>
+        </where>
+
+        order by b.create_time desc
+    </select>
+
+    <select id="queryRecommendBlog" resultType="cn.nick.dto.RecommendBlog">
+        select id,title,recommend,create_time from t_blog where recommend = 1
+    </select>
+    <select id="queryAllBlog" parameterType="String" resultMap="indexBlog">
+        select b.id bid,b.title,b.first_photo,b.views,b.create_time,b.description,
+        t.name ,u.nickname,u.avatar,t.id tid
+        from t_blog b,t_type t,t_user u
+        <where>
+            <if test="1 == 1">
+               b.type_id = t.id and u.id=b.user_id and b.published = 1
+            </if>
+            <if test="query != null">
+                and (b.title like concat('%',#{query},'%') or b.description like concat('%',#{query},'%') )
+            </if>
+            order by create_time desc
+        </where>
+    </select>
+
+    <select id="queryDetailBlogById" resultMap="detail">
+        select b.id bid,b.title,b.content,b.first_photo,b.flag,b.views,b.share_statement,b.commentabled,b.create_time,
+        b.update_time,u.nickname,u.avatar,t.id tid,t.name
+        from t_blog b,t_user u,t_tag t,t_blog_tags tb
+        where b.id = #{id} and b.user_id = u.id and tb.blog_id = b.id and tb.tag_id = t.id
+    </select>
+
+    <delete id="delBlog">
+        delete from t_blog where id = #{id}
+    </delete>
+    <delete id="delBlogAndTag">
+        delete from t_blog_tags where blog_id = #{id}
+    </delete>
+
+    <insert id="addBlog" parameterType="Blog">
+        insert into t_blog values(#{id},#{title},#{content},#{firstPhoto},#{flag},#{views},#{shareStatement},
+        #{commentabled},#{published},#{recommend},#{createTime},#{updateTime},#{typeId},
+        #{userId},#{tagIds},#{description})
+    </insert>
+    <insert id="addBlogAndTags" parameterType="cn.nick.dto.BlogAndTag">
+        insert into t_blog_tags values(#{id},#{tagId},#{blogId})
+    </insert>
+
+    <update id="updBlog" parameterType="Blog">
+        update t_blog set title=#{title},content=#{content},first_photo=#{firstPhoto},flag=#{flag},views=#{views},
+        share_statement=#{shareStatement},commentabled=#{commentabled},published=#{published},
+        recommend=#{recommend},create_time=#{createTime},update_time=#{updateTime},type_id=#{typeId},
+        user_id=#{userId},tag_ids=#{tagIds},description=#{description} where id=#{id}
+    </update>
+    <update id="addBlogViews">
+        update t_blog set views=views+1
+        where id = #{id}
+    </update>
+    <select id="queryAllDate" resultType="cn.nick.dto.DateTime">
+        select DATE_FORMAT(b.create_time,'%Y') as year from t_blog b
+        group by year
+        order by year desc
+    </select>
+
+    <select id="queryAllBlogByYear" resultType="Blog">
+        select * from t_blog b where date_format(b.create_time,'%Y') = #{year} order by b.create_time desc
+    </select>
+</mapper>

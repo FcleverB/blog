@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nick.mapper.TypeMapper">
+
+    <resultMap id="types" type="Type">
+        <id property="id" column="tid"></id>
+        <result property="name" column="name"></result>
+        <collection property="blogs" ofType="Blog">
+            <id property="id" column="bid"/>
+            <result property="title" column="title"/>
+            <result property="typeId" column="type_id"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="allTypeBlog" type="Type">
+        <id property="id" column="tid"></id>
+        <result property="name" column="name"></result>
+        <collection property="blogs" ofType="cn.nick.dto.IndexBlog">
+            <id property="id" column="bid"/>
+            <result property="title" column="title"/>
+            <result property="firstPhoto" column="first_photo"/>
+            <result property="views" column="views"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="description" column="description"/>
+            <result property="nickname" column="nickname"/>
+            <result property="avatar" column="avatar"/>
+        </collection>
+    </resultMap>
+
+    <select id="listType" resultType="Type">
+        select * from t_type
+    </select>
+    <select id="queryTypeById" resultType="Type">
+        select * from t_type where id=#{id}
+    </select>
+    <select id="queryTypeByName" resultType="Type">
+        select * from t_type where name=#{name}
+    </select>
+    <select id="queryTypeAndBlog" resultMap="types">
+        select t.id tid,t.name,b.id bid,b.title,b.type_id from t_type t,t_blog b
+        where t.id = b.type_id
+    </select>
+
+    <select id="queryAllTypeBlog" resultMap="allTypeBlog">
+        select t.id tid,t.name,b.id bid,b.title,b.first_photo,b.views,b.update_time,
+        b.description,u.nickname,u.avatar
+        from t_type t,t_blog b,t_user u
+        where t.id = b.type_id and b.user_id = u.id and t.id=#{id}
+        order by update_time desc
+    </select>
+
+    <update id="updType" parameterType="Type">
+        update t_type set name=#{name} where id=#{id}
+    </update>
+    <insert id="addType" parameterType="Type">
+        insert into t_type (id,name)
+        values (#{id},#{name})
+    </insert>
+    <delete id="delType">
+        delete from t_type where id=#{id}
+    </delete>
+
+
+</mapper>

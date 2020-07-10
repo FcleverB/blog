@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+
+<title th:text="#{login.alltitle}">博客登录</title>
+
+<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/style.css">
+
+
+</head>
+<body>
+
+
+<div class="materialContainer">
+	<form name="loginform" class="ui box" th:action="@{/admin/login}" th:method="post" onsubmit="return show()">
+		<div class="title" th:text="#{login.title}">登录</div>
+		<div class="input">
+			<label for="username" th:text="#{login.nickname}">用户名</label>
+			<input type="text" name="username" id="username" class="info">
+			<span></span>
+		</div>
+		<div class="input">
+			<label for="password" th:text="#{login.password}">密码</label>
+			<input type="password" name="password" id="password" class="info">
+			<span></span>
+		</div>
+		<div class="ui error message"></div>
+		<div style="color:red" th:unless="${#strings.isEmpty(msg)}" th:text="${msg}"></div>
+		<div class="button login">
+			<button id="b1">
+				<span th:text="#{login.title}" >登录</span>
+				<i class="fa fa-check"></i>
+			</button>
+		</div>
+		<!--<a href="javascript:" class="pass-forgot" th:text="#{login.forget}">忘记密码？</a>-->
+			<a class="pass-forgot" th:href="@{/admin(l='zh_CN')}">中文</a>
+			<a class="pass-forgot" th:href="@{/admin(l='en_US')}">English</a>
+	</form>
+
+
+
+	<form name="registerform" th:action="@{/admin/register}" th:method="post" onsubmit="return register()">
+		<div class="overbox">
+			<div class="material-button alt-2">
+				<span class="shape"></span>
+			</div>
+			<div class="title">注册</div>
+			<div class="input">
+				<label for="regname">用户名</label>
+				<input type="text" name="regname" id="regname">
+				<span class="spin"></span>
+			</div>
+			<div class="input">
+				<label for="regpass">密码</label>
+				<input type="password" name="regpass" id="regpass">
+				<span class="spin"></span>
+			</div>
+			<div class="input">
+				<label for="reregpass">确认密码</label>
+				<input type="password" name="reregpass" id="reregpass">
+				<span class="spin"></span>
+			</div>
+			<div class="button">
+				<button id="reg">
+					<span>注册</span>
+				</button>
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/index.js"></script>
+
+<script>
+    function show() {
+        let x = $("#username").val();
+        let y = $("#password").val();
+        if(x.length==0){
+            alert("请填写用户名");
+            return false;
+        }else if (y.length==0){
+            alert("请填写密码");
+            return false;
+        }
+    }
+
+	//给查询按钮绑定单击事件
+	function register() {
+		// $("#reg").click(function(){
+		let regname = $("#regname").val();
+		let regpass = $("#regpass").val();
+		let reregpass = $("#reregpass").val();
+		if (regname.length == 0) {
+			alert("请填写用户名");
+			return false;
+		} else if (regpass.length == 0 || reregpass.length == 0) {
+			alert("密码未填写");
+			return false;
+		}
+		if (regpass != reregpass) {
+			alert("两次输入密码不一致");
+			return false;
+		}
+		var data;
+		// //通过ajax获取请求得到数据并通过回调函数输出
+		$.ajax({
+			url: "/admin/registername",
+			type: "post",
+			async:false,	//设置为同步,不然外部变量拿不到返回值
+			data: {"regname": regname, "regpass": regpass},
+			success: function (result) {
+				data=result;
+			}
+		});
+		if (data==regname){
+			alert("用户名重复,请重新输入")
+			return false;
+		} else{
+			alert("注册成功")
+			return true;
+		}
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head(~{::title})">
+    <title>归档</title>
+</head>
+<body>
+    <!--导航-->
+    <nav th:replace="_fragments :: menu(4)" >
+    </nav>
+    <!--中间内容-->
+    <div class="m-container-small m-padded-tb-big">
+        <div class="ui container">
+            <!--header-->
+            <div class="ui top attached padded segment">
+                <div class="ui middle aligned two column grid">
+                    <div class="column">
+                        <h2 class="ui teal header">归档</h2>
+                    </div>
+                    <div class="right aligned column">
+                        共<h2 class="ui red header m-inline-block m-text-thin" th:text="${total}">15</h2>篇
+                    </div>
+                </div>
+            </div>
+            <div th:each="archive:${dateTimes}">
+                <h2 class="ui center aligned header" th:text="${archive.year}">2020</h2>
+
+                <div class="ui fluid vertical menu">
+                    <div th:each="blog:${archive.blogs}" >
+
+                    <a th:href="@{/blog/{id}/detail(id=${blog.id})}" target="_blank" class="item">
+                    <span>
+                        <i class="mini orange circle icon"></i><span th:text="${blog.title}">天天快乐学习</span>
+                        <div class="ui teal basic left pointing label m-padded-mini" th:text="${#dates.format(blog.createTime,'MM-dd')}">
+                            9月3日
+                        </div>
+                    </span>
+                        <div class="ui orange basic left pointing label m-padded-mini" th:text="${blog.flag}">原创</div>
+                    </a>
+
+                    </div>
+                 </div>
+
+            </div>
+        </div>
+    </div>
+    <!--底部-->
+    <footer th:replace="_fragments :: footer">
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+<script>
+    $('.menu.toggle').click(function () {
+        $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+</script>
+</body>
+</html>

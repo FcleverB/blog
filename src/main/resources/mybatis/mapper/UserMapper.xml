@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.nick.mapper.UserMapper">
+    <select id="queryUserByName" parameterType="String" resultType="User">
+        select * from t_user where username=#{username}
+    </select>
+    <select id="selUser" resultType="User">
+        select * from user
+    </select>
+    <select id="selUserByName" parameterType="User" resultType="User">
+        select * from user where name=#{name}
+    </select>
+    <insert id="insUser" parameterType="User">
+        insert into user (name,password,head_url,role)
+        values (#{name},#{password},#{headUrl},#{role})
+    </insert>
+    <delete id="delUser">
+        delete from user where id=#{id}
+    </delete>
+    <update id="updUser" parameterType="User">
+        update t_user set nickname=#{nickname},avatar=#{avatar}
+        where username=#{username}
+    </update>
+    <insert id="register" parameterType="User">
+        insert into t_user values(null,#{nickname},#{username},#{password},null,#{avatar},1,#{createTime},#{updateTime})
+    </insert>
+    <select id="findUserByName" parameterType="String" resultType="String">
+        select username from t_user where username = #{regname}
+    </select>
+</mapper>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/_fragment :: head(~{::title})">
+    <meta charset="UTF-8">
+    <title>个人信息</title>
+
+</head>
+<body>
+<!--导航-->
+<nav th:replace="admin/_fragment :: menu(0)">
+</nav>
+<!--中间内容-->
+<div class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+        <form th:action="@{/admin/changepi}" th:method="post" class="ui segment form" >
+            <input type="hidden" th:value="${session.user.username}" name="username"/>
+            <img id="userInputResult" class="ui medium circular image" th:src="@{${session.user.avatar}}">
+             头像：<input type="text" id="avatar" name="avatar" th:value="${session.user.avatar}"/>
+            <br/>
+            用户名：<input type="text" id="nickname" name="nickname" th:value="${session.user.nickname}"/>
+
+            <input class="ui pink button" type="submit" th:value="提交"/>
+        </form>
+    </div>
+</div>
+<!--底部-->
+<footer th:replace="admin/_fragment :: footer">
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+<script>
+    $("#avatar").change(function(){
+        var path = $("#avatar").val();
+        $("#userInputResult").attr('src',path);
+    });
+</script>
+</body>
+</html>
